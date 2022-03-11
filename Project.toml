@@ -3,11 +3,17 @@ uuid = "9eb8ae02-809e-4b16-afbc-1cadb820c769"
 authors = ["longemen3000 <longemen3000@gmail.com> and contributors"]
 version = "0.1.0"
 
-[extras]
-Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+[deps]
+ForwardDiff = "f6369f11-7733-5829-9624-2563aa707210"
+Measurements = "eff96d63-e80a-5855-80a2-b1b0885c5ab7"
 
 [compat]
 julia = "1"
+ForwardDiff = "0.10"
+Measurements = "2"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
 test = ["Test"]
