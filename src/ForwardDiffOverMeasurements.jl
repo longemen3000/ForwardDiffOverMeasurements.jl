@@ -2,7 +2,7 @@ module ForwardDiffOverMeasurements
 
 using ForwardDiff: Dual
 using Measurements: Measurement
-import Base: +,-,/,*,promote_rule
+import Base: +,-,/,*,promote_rule 
 
 function promote_rule(::Type{Measurement{V}}, ::Type{Dual{T, V, N}}) where {T,V,N}
     Dual{Measurement{T}, V, N}
