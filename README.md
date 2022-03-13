@@ -26,7 +26,7 @@ dfx(x,y) = ForwardDiff.derivative(_x -> f(_x,y),x)
 dfx(x1,y1) #also fine
 ```
 
-The combination is **not** fine:
+But,this combination is **not** fine:
 ```julia
 using ForwardDiff,Measurements
 x1 = 1.0 ±0.1
@@ -56,6 +56,7 @@ The package loads promote rules and some basic operations that favor a `ForwardD
 ```julia
 f(x::Dual,y::Measurement)::Dual
 ```
+The package does not export anything nor does define new functions.
 
 At the moment, `+`, `-`, `*`, and `/` are defined. if any Base function is missing, please open an issue.
 
