@@ -47,7 +47,7 @@ dfx(x1,y1) #fine again
 ## Usage
 on the REPL:
 ```
->julia [
+>julia ]
 (@v1.7) pkg> add https://github.com/longemen3000/ForwardDiffOverMeasurements.jl
 >julia using ForwardDiffOverMeasurements
 ```
