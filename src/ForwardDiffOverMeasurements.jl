@@ -13,88 +13,33 @@ function promote_rule(::Type{Measurement{V1}}, ::Type{Dual{T, V2, N}}) where {V1
     return Dual{T , Vx, N}
 end
 
-#+
-@inline function Base.:+(x::Dual{Tx,V}, y::Measurement{V}) where {Tx,V}
-    y = Dual{Tx}(y)
-    +(x,y)
+macro overload_ambiguous(op)
+    return quote
+        @inline function $op(x::Dual{Tx,V}, y::Measurement{V}) where {Tx,V}
+            y = Dual{Tx}(y)
+            $op(x,y)
+        end
+        
+        @inline function $op(x::Measurement{V},y::Dual{Ty,V}) where {V,Ty}
+            x = Dual{Ty}(x)
+            $op(x,y)
+        end
+        
+        @inline function $op(x::Dual{Tx}, y::Measurement) where {Tx}
+            y = Dual{Tx}(y)
+            $op(x,y)
+        end
+        
+        @inline function $op(x::Measurement,y::Dual{Ty}) where {Ty}
+            x = Dual{Ty}(x)
+            $op(x,y)
+        end
+    end |> esc
 end
 
-@inline function Base.:+(x::Measurement{V},y::Dual{Ty,V}) where {V,Ty}
-    x = Dual{Ty}(x)
-    +(x,y)
-end
-
-@inline function Base.:+(x::Dual{Tx}, y::Measurement) where {Tx}
-    y = Dual{Tx}(y)
-    +(x,y)
-end
-
-@inline function Base.:+(x::Measurement,y::Dual{Ty}) where {Ty}
-    x = Dual{Ty}(x)
-    +(x,y)
-end
-#-
-
-@inline function Base.:-(x::Dual{Tx,V}, y::Measurement{V}) where {Tx,V}
-    y = Dual{Tx}(y)
-    -(x,y)
-end
-
-@inline function Base.:-(x::Measurement{V},y::Dual{Ty,V}) where {V,Ty}
-    x = Dual{Ty}(x)
-    -(x,y)
-end
-
-@inline function Base.:-(x::Dual{Tx}, y::Measurement) where {Tx}
-    y = Dual{Tx}(y)
-    -(x,y)
-end
-
-@inline function Base.:-(x::Measurement,y::Dual{Ty}) where {Ty}
-    x = Dual{Ty}(x)
-    -(x,y)
-end
-
-#*
-@inline function Base.:*(x::Dual{Tx,V}, y::Measurement{V}) where {Tx,V}
-    y = Dual{Tx}(y)
-    *(x,y)
-end
-
-@inline function Base.:*(x::Measurement{V},y::Dual{Ty,V}) where {V,Ty}
-    x = Dual{Ty}(x)
-    *(x,y)
-end
-
-@inline function Base.:*(x::Dual{Tx}, y::Measurement) where {Tx}
-    y = Dual{Tx}(y)
-    *(x,y)
-end
-
-@inline function Base.:*(x::Measurement,y::Dual{Ty}) where {Ty}
-    x = Dual{Ty}(x)
-    *(x,y)
-end
-
-#/
-@inline function Base.:/(x::Dual{Tx,V}, y::Measurement{V}) where {Tx,V}
-    y = Dual{Tx}(y)
-    /(x,y)
-end
-
-@inline function Base.:/(x::Measurement{V},y::Dual{Ty,V}) where {V,Ty}
-    x = Dual{Ty}(x)
-    /(x,y)
-end
-
-@inline function Base.:/(x::Dual{Tx}, y::Measurement) where {Tx}
-    y = Dual{Tx}(y)
-    /(x,y)
-end
-
-@inline function Base.:/(x::Measurement,y::Dual{Ty}) where {Ty}
-    x = Dual{Ty}(x)
-    /(x,y)
-end
+@overload_ambiguous Base.:+
+@overload_ambiguous Base.:-
+@overload_ambiguous Base.:*
+@overload_ambiguous Base.:/
 
 end #module
