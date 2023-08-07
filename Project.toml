@@ -1,7 +1,7 @@
 name = "ForwardDiffOverMeasurements"
 uuid = "9eb8ae02-809e-4b16-afbc-1cadb820c769"
 authors = ["longemen3000 <longemen3000@gmail.com> and contributors"]
-version = "0.1.1"
+version = "0.1.2"
 
 [deps]
 ForwardDiff = "f6369f11-7733-5829-9624-2563aa707210"
