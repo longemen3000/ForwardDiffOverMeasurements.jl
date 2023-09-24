@@ -3,8 +3,21 @@ module ForwardDiffOverMeasurements
 using ForwardDiff: Dual, DiffRules, NaNMath, LogExpFunctions, SpecialFunctions,≺
 using Measurements: Measurement
 import Base: +,-,/,*,promote_rule
-using ForwardDiff: AMBIGUOUS_TYPES, partials, values
+using ForwardDiff: AMBIGUOUS_TYPES, partials, values, Partials, value
 using ForwardDiff: ForwardDiff
+
+#patch this until is fixed in ForwardDiff
+
+#TIL you can actually dispatch on @generated functions
+@generated function ForwardDiff.construct_seeds(::Type{Partials{N,V}}) where {N,V<:Measurement}
+    return Expr(:tuple, [:(single_seed(Partials{N,V}, Val{$i}())) for i in 1:N]...)
+end
+
+#needs redefinition here, because generated functions don't allow extra definitions
+@generated function single_seed(::Type{Partials{N,V}}, ::Val{i}) where {N,V,i}
+    ex = Expr(:tuple, [ifelse(i === j, :(oneunit(V)), :(zero(V))) for j in 1:N]...)
+    return :(Partials($(ex)))
+end
 
 function promote_rule(::Type{Measurement{V}}, ::Type{Dual{T, V, N}}) where {T,V,N}
     Dual{Measurement{T}, V, N}
