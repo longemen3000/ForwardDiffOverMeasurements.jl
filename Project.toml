@@ -1,7 +1,7 @@
 name = "ForwardDiffOverMeasurements"
 uuid = "9eb8ae02-809e-4b16-afbc-1cadb820c769"
 authors = ["longemen3000 <longemen3000@gmail.com> and contributors"]
-version = "0.1.5"
+version = "0.1.6"
 
 [deps]
 ForwardDiff = "f6369f11-7733-5829-9624-2563aa707210"
@@ -9,7 +9,7 @@ Measurements = "eff96d63-e80a-5855-80a2-b1b0885c5ab7"
 
 [compat]
 julia = "1"
-ForwardDiff = "0.10.36 - 0.10.38, 1"
+ForwardDiff = "0.10.36-0.10.38, 1"
 Measurements = "2"
 
 [extras]
