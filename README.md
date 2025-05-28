@@ -1,5 +1,4 @@
 [![Build Status](https://github.com/longemen3000/ForwardDiffOverMeasurements.jl/workflows/CI/badge.svg)](https://github.com/longemen3000/ForwardDiffOverMeasurements.jl/actions)
-
 # ForwardDiffOverMeasurements
 
 ## Motivation
