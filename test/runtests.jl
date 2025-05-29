@@ -27,7 +27,7 @@ fd_f5(x,y) = uncertainty(fd_f1(x,y))
                 (type_p1_big,type_m1,type_p1_big),
                 (type_m1_big,type_p1_big,type_p1_big),
         ]
-
+        @show t1,t2,r
         @test promote_rule(t1,t2) == r
         @test promote_rule(t2,t1) == r
         @test (oneunit(t1) + oneunit(t2)) isa r
