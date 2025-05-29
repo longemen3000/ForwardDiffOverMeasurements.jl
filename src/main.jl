@@ -51,7 +51,7 @@ function promote_rule(::Type{Measurement{V}}, ::Type{Dual{T, V, N}}) where {T,V,
 end
 
 function promote_rule(::Type{Measurement{V1}}, ::Type{Dual{T, V2, N}}) where {V1<:AbstractFloat, T, V2, N}
-    Vx = promote_rule(V1,V2)
+    Vx = promote_type(V1,V2)
     return Dual{T, Measurement{Vx}, N}
 end
 
@@ -67,13 +67,13 @@ function overload_ambiguous_binary(M,f)
     Mf = :($M.$f)
     return quote
         @inline function $Mf(x::Dual{Tx}, y::Measurement) where {Tx}
-            ∂ = promote_rule(typeof(x),typeof(y))
+            ∂ = promote_type(typeof(x),typeof(y))
             ∂y = convert(∂,y)
             $Mf(x,∂y)
         end
 
         @inline function $Mf(x::Measurement,y::Dual{Ty}) where {Ty}
-            ∂ = promote_rule(typeof(x),typeof(y))
+            ∂ = promote_type(typeof(x),typeof(y))
             ∂x = convert(∂,x)
             $Mf(∂x,y)
         end
