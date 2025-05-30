@@ -46,12 +46,6 @@ There are two options:
 - Measurement{Dual}: not possible, Dual is not an AbstractFloat
 - Dual{Measurement}: possible, and the approach taken by this extension
 =#
-
-
-function promote_rule(::Type{Measurement{V}}, ::Type{Dual{T, V, N}}) where {T,V,N}
-    Dual{T, Measurement{V}, N}
-end
-
 function promote_rule(::Type{Measurement{V1}}, ::Type{Dual{T, V2, N}}) where {V1<:AbstractFloat, T, V2, N}
     Vx = Measurement{promote_type(V1,V2)}
     return Dual{T, Vx, N}
@@ -60,10 +54,6 @@ end
 function promote_rule(::Type{Measurement{V1}}, ::Type{Dual{T, Measurement{V2}, N}}) where {V1<:AbstractFloat, T, V2<:AbstractFloat, N}
     Vx = Measurement{promote_type(V1,V2)}
     return Dual{T, Vx, N}
-end
-
-function promote_rule(::Type{Dual{T, V, N}}, ::Type{Measurement{V}}) where {T,V,N}
-    Dual{T, Measurement{V}, N}
 end
 
 function promote_rule( ::Type{Dual{T, V2, N}}, ::Type{Measurement{V1}}) where {T, V2, N, V1<:AbstractFloat}
@@ -76,7 +66,9 @@ function promote_rule(::Type{Dual{T, Measurement{V2}, N}}, ::Type{Measurement{V1
     return Dual{T, Vx, N}
 end
 
-
+function Base.oneunit(::Type{Dual{T, Measurement{V}, N}}) where {T,V,N}
+    return Dual{T,Measurement{V},N}(oneunit(Measurement{V}))
+end
 
 #=
 overload_ambiguous_binary
@@ -136,8 +128,11 @@ macro define_ternary_dual_op2(f, xyz_body, xy_body, xz_body, yz_body, x_body, y_
     for Q in AMBIGUOUS_TYPES
         expr = quote
             @inline $(f)(x::$FD.Dual{Tx}, y::$R, z::$Q) where {Tx} = $x_body
+            @inline $(f)(x::$FD.Dual{Tx}, y::$Q, z::$R) where {Tx} = $x_body
             @inline $(f)(x::$R, y::$FD.Dual{Ty}, z::$Q) where {Ty} = $y_body
+            @inline $(f)(x::$Q, y::$FD.Dual{Ty}, z::$R) where {Ty} = $y_body
             @inline $(f)(x::$R, y::$Q, z::$FD.Dual{Tz}) where {Tz} = $z_body
+            @inline $(f)(x::$Q, y::$R, z::$FD.Dual{Tz}) where {Tz} = $z_body
         end
         append!(defs.args, expr.args)
     end
@@ -159,14 +154,10 @@ We don't need to overload unary definitions.
 and only need to evaluate the ambiguous cases for binary definitions.
 =#
 for (M, f, arity) in DiffRules.diffrules(filter_modules = nothing)
-    if !(isdefined(@__MODULE__, M) && isdefined(getfield(@__MODULE__, M), f))
-        continue  # Skip rules for methods not defined in the current scope
-    end
-    if arity == 2
+    #DiffRules has a list of modules, (NaNMath,SpecialFunctions). Only load existing methods.
+    #those packages are loaded by ForwardDiff anyways
+    if (isdefined(@__MODULE__, M) && isdefined(getfield(@__MODULE__, M), f)) && arity == 2
         eval(overload_ambiguous_binary(M,f))
-    else
-        # error("ForwardDiff currently only knows how to autogenerate Dual definitions for unary and binary functions.")
-        # However, the presence of N-ary rules need not cause any problems here, they can simply be ignored.
     end
 end
 
